@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String   // hashed with bcrypt
+  
+  // Instagram credentials (encrypted)
+  instagramUsername String?
+  instagramSession  String?  @db.Text // encrypted session data
+  sessionExpiresAt  DateTime?
+  has2FA            Boolean  @default(false)
+  
+  // Wrapped periodicity preference
+  wrappedPeriodicity String @default("monthly") // 'daily', 'weekly', 'monthly'
+  
+  // Account limits
+  maxFollowedAccounts Int @default(15)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  sessions         Session[]
+  accounts         Account[]
+  followedAccounts FollowedAccount[]
+  notifications    Notification[]
+  
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
+}
+
+model FollowedAccount {
+  id              String   @id @default(cuid())
+  userId          String
+  instagramHandle String
+  displayName     String?
+  profilePicUrl   String?
+  isActive        Boolean  @default(true)
+  lastCheckedAt   DateTime?
+  createdAt       DateTime @default(now())
+  
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stories Story[]
+  posts   Post[]
+  
+  @@unique([userId, instagramHandle])
+  @@map("followed_accounts")
+}
+
+model Story {
+  id                String   @id @default(cuid())
+  followedAccountId String
+  instagramStoryId  String   @unique
+  mediaType         String   // 'image' or 'video'
+  
+  // Encrypted media stored in database (compressed if video)
+  mediaData         Bytes    // encrypted binary data
+  thumbnailData     Bytes?   // encrypted thumbnail
+  isCompressed      Boolean  @default(false)
+  originalSize      Int?     // bytes, before compression
+  compressedSize    Int?     // bytes, after compression
+  
+  caption           String?
+  postedAt          DateTime
+  expiresAt         DateTime
+  fetchedAt         DateTime @default(now())
+  viewedByUser      Boolean  @default(false)
+  
+  followedAccount   FollowedAccount @relation(fields: [followedAccountId], references: [id], onDelete: Cascade)
+  
+  @@index([followedAccountId, postedAt])
+  @@map("stories")
+}
+
+model Post {
+  id                String   @id @default(cuid())
+  followedAccountId String
+  instagramPostId   String   @unique
+  mediaType         String   // 'image', 'video', 'carousel'
+  carouselId        String?  // groups carousel items together
+  carouselIndex     Int?     // order within carousel
+  
+  // Encrypted media stored in database (compressed if video)
+  mediaData         Bytes    // encrypted binary data
+  thumbnailData     Bytes?   // encrypted thumbnail
+  isCompressed      Boolean  @default(false)
+  originalSize      Int?     // bytes, before compression
+  compressedSize    Int?     // bytes, after compression
+  
+  caption           String?  @db.Text
+  postedAt          DateTime
+  fetchedAt         DateTime @default(now())
+  viewedByUser      Boolean  @default(false)
+  includedInWrapped Boolean  @default(false)
+  
+  followedAccount   FollowedAccount @relation(fields: [followedAccountId], references: [id], onDelete: Cascade)
+  
+  @@index([followedAccountId, postedAt])
+  @@index([carouselId])
+  @@map("posts")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  message   String
+  type      String   // 'new_stories', 'new_wrapped', 'system'
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
+}
+
+model ScraperJob {
+  id          String   @id @default(cuid())
+  userId      String
+  accountId   String
+  jobType     String   // 'stories', 'posts'
+  status      String   // 'pending', 'running', 'completed', 'failed'
+  startedAt   DateTime?
+  completedAt DateTime?
+  error       String?
+  itemsFound  Int      @default(0)
+  createdAt   DateTime @default(now())
+  
+  @@index([userId, status])
+  @@map("scraper_jobs")
+}

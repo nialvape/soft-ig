@@ -1,0 +1,28 @@
+{
+    "name": "Soft-IG - Instagram Stories Viewer",
+    "short_name": "Soft-IG",
+    "description": "View Instagram stories and posts in a healthy, chronological format",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        }
+    ],
+    "categories": [
+        "social",
+        "lifestyle"
+    ]
+}
