@@ -206,13 +206,51 @@ Detailed planning documents are available in the `llm/` directory:
 ## 🚧 Roadmap
 
 - [x] **Phase 1**: Foundation & Setup
-- [ ] **Phase 2**: Authentication System
-- [ ] **Phase 3**: Playwright Scraper
-- [ ] **Phase 4**: Background Jobs
-- [ ] **Phase 5**: Feed & UI
-- [ ] **Phase 6**: PWA & Notifications
-- [ ] **Phase 7**: Testing & Security Audit
-- [ ] **Phase 8**: Deployment
+- [x] **Phase 2**: Authentication System
+- [x] **Phase 3**: Instagram Connection & 2FA
+- [ ] **Phase 4**: Playwright Scraper (Stories & Posts)
+- [ ] **Phase 5**: Background Jobs
+- [ ] **Phase 6**: Feed & UI
+- [ ] **Phase 7**: PWA & Notifications
+- [ ] **Phase 8**: Testing & Security Audit
+- [ ] **Phase 9**: Deployment
+
+## 🌐 Deployment
+
+### Architecture
+
+**Frontend**: Vercel (Next.js pages, static assets, auth)  
+**Backend**: Self-hosted VPS (Playwright scraper, background jobs)  
+**Database**: Supabase (PostgreSQL)  
+**Cache**: Upstash (Redis)
+
+### Quick Deploy
+
+**Vercel (Frontend)**:
+```bash
+vercel deploy --prod
+```
+
+**VPS (Backend)**:
+```bash
+npm install
+npx playwright install chromium
+pm2 start backend/server.js --name soft-ig-backend
+```
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment guide.
+
+### Environment Variables
+
+**Vercel**:
+- `DATABASE_URL` - Supabase PostgreSQL URL
+- `NEXTAUTH_URL` - Your Vercel app URL
+- `BACKEND_API_URL` - Your VPS backend URL
+
+**VPS**:
+- `DATABASE_URL` - Same as Vercel
+- `FRONTEND_URL` - Your Vercel app URL
+- `PORT` - Backend port (default: 4000)
 
 ## 📄 License
 
