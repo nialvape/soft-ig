@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import ScraperTestPanel from "@/components/scraper/ScraperTestPanel";
 
 export default async function FeedPage() {
     const session = await auth();
@@ -59,34 +60,37 @@ export default async function FeedPage() {
                             <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
                                 <span className="text-green-400 text-2xl">✓</span>
                             </div>
-                            <h3 className="text-2xl font-semibold text-white">Phase 2: Authentication Complete</h3>
+                            <h3 className="text-2xl font-semibold text-white">Phase 4: Scraper Complete</h3>
                         </div>
 
                         <div className="space-y-6">
                             <div>
                                 <h4 className="text-white font-medium mb-3">✅ Implemented Features</h4>
                                 <ul className="text-sm text-gray-400 space-y-2 ml-4">
-                                    <li>• User registration and login working</li>
-                                    <li>• Protected routes with middleware</li>
-                                    <li>• Database sessions with NextAuth.js v5</li>
-                                    <li>• Password hashing with bcrypt (cost 12)</li>
-                                    <li>• Sleek dark theme UI</li>
+                                    <li>• Instagram login with Playwright (stealth mode)</li>
+                                    <li>• 2FA detection and handling</li>
+                                    <li>• Story scraping with session reuse</li>
+                                    <li>• Post scraping with carousel support</li>
+                                    <li>• Media download and encryption (AES-256-GCM)</li>
+                                    <li>• Human-like behavior (random delays, realistic typing)</li>
                                 </ul>
                             </div>
 
                             <div className="pt-6 border-t border-white/10">
                                 <h4 className="text-white font-medium mb-3">🚀 Coming Next</h4>
                                 <ul className="text-sm text-gray-400 space-y-2 ml-4">
-                                    <li>• Instagram account connection flow</li>
-                                    <li>• Playwright scraper with human-like behavior</li>
-                                    <li>• Story and post fetching (every 20h)</li>
                                     <li>• Background job system with Bull/Redis</li>
-                                    <li>• Unified chronological feed (stories + posts)</li>
+                                    <li>• Automatic story fetching (every 20h)</li>
+                                    <li>• Unified feed UI (stories + posts)</li>
                                     <li>• Video compression with FFmpeg</li>
+                                    <li>• Push notifications for new content</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
+
+                    {/* Scraper Test Panel */}
+                    <ScraperTestPanel />
 
                     {/* Empty State */}
                     <div className="rounded-2xl bg-white/5 border border-white/10 p-12 backdrop-blur-sm">
@@ -96,14 +100,8 @@ export default async function FeedPage() {
                             </div>
                             <h3 className="text-xl font-semibold text-white">No Stories Yet</h3>
                             <p className="text-gray-400 text-sm max-w-md mx-auto">
-                                Connect your Instagram account to start viewing stories and posts from people you care about
+                                Connect your Instagram account in Settings, then use the test panel above to scrape stories and posts
                             </p>
-                            <button
-                                disabled
-                                className="mt-4 px-8 py-3 rounded-full bg-white/10 text-gray-500 font-medium cursor-not-allowed"
-                            >
-                                Connect Instagram (Coming Soon)
-                            </button>
                         </div>
                     </div>
                 </div>
